@@ -1,46 +1,58 @@
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.io.Writable;
 
-public class TupleWritable implements Writable {
-    private Text value1;
-    private Text value2;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.WritableComparable;
+
+public class TupleWritable implements WritableComparable<TupleWritable> {
+    private Text first;
+    private Text second;
 
     public TupleWritable() {
-        value1 = new Text();
-        value2 = new Text();
+        this.first = new Text();
+        this.second = new Text();
     }
 
-    public TupleWritable(String value1, String value2) {
-        this.value1 = new Text(value1);
-        this.value2 = new Text(value2);
+    public TupleWritable(Text first, Text second) {
+        this.first = first;
+        this.second = second;
     }
 
-    public String getVal1() {
-        return value1.toString();
+    public Text getFirst() {
+        return first;
     }
 
-    public String getVal2() {
-        return value2.toString();
+    public Text getSecond() {
+        return second;
     }
 
-    @Override
-    public String toString() {
-        return value1.toString()+" "+value2.toString();
+    public void setFirst(Text first) {
+        this.first = first;
+    }
+
+    public void setSecond(Text second) {
+        this.second = second;
     }
 
     @Override
     public void readFields(DataInput in) throws IOException {
-        value1.readFields(in);
-        value2.readFields(in);
+        first.readFields(in);
+        second.readFields(in);
     }
 
     @Override
     public void write(DataOutput out) throws IOException {
-        value1.write(out);
-        value2.write(out);
+        first.write(out);
+        second.write(out);
+    }
+
+    @Override
+    public int compareTo(TupleWritable o) {
+        int cmp = first.compareTo(o.first);
+        if (cmp != 0) {
+            return cmp;
+        }
+        return second.compareTo(o.second);
     }
 }

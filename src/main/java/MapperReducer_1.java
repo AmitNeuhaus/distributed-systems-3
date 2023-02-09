@@ -1,11 +1,13 @@
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.*;
+//import org.apache.hadoop.mapred.join.TupleWritable;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Partitioner;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.SequenceFileAsTextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import java.io.IOException;
 import java.util.Iterator;
@@ -17,7 +19,7 @@ public class MapperReducer_1 {
             String sentence = value.toString().split("\t")[1];
             PatternNoun patternNoun = Parser.parse(sentence);
             if(patternNoun != null) {
-                TupleWritable n1n2 = new TupleWritable(patternNoun.noun1, patternNoun.noun2);
+                TupleWritable n1n2 = new TupleWritable(new Text(patternNoun.noun1), new Text(patternNoun.noun2));
                 Text pattern = new Text(patternNoun.pattern);
                 context.write(n1n2, pattern);
             }
@@ -54,7 +56,7 @@ public class MapperReducer_1 {
     }
 
     private static TupleWritable getPatternToCountTuple(int currentCount, String previousPattern) {
-        return new TupleWritable(previousPattern, Integer.toString(currentCount));
+        return new TupleWritable(new Text(previousPattern), new Text(Integer.toString(currentCount)));
     }
 
     public static class PartitionerClass extends Partitioner<TupleWritable, Text> {
@@ -75,8 +77,8 @@ public class MapperReducer_1 {
             job.setMapOutputKeyClass(TupleWritable.class);
             job.setMapOutputValueClass(Text.class);
             job.setOutputKeyClass(TupleWritable.class);
-            job.setOutputValueClass(TupleWritable.class);
-//        job.setInputFormatClass(SequenceFileInputFormat.class);
+            job.setOutputValueClass(Text.class);
+//        job.setInputFormatClass(SequenceFileAsTextInputFormat.class);
             FileInputFormat.addInputPath(job, new Path(args[0]));
             FileOutputFormat.setOutputPath(job, new Path(args[1]));
             System.exit(job.waitForCompletion(true) ? 0 : 1);
