@@ -1,30 +1,30 @@
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-
 import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.Writable;
 
 public class TupleWritable implements Writable {
-    private IntWritable value1;
-    private IntWritable value2;
+    private Text value1;
+    private Text value2;
 
     public TupleWritable() {
-        value1 = new IntWritable();
-        value2 = new IntWritable();
+        value1 = new Text();
+        value2 = new Text();
     }
 
-    public TupleWritable(int value1, int value2) {
-        this.value1 = new IntWritable(value1);
-        this.value2 = new IntWritable(value2);
+    public TupleWritable(String value1, String value2) {
+        this.value1 = new Text(value1);
+        this.value2 = new Text(value2);
     }
 
-    public int getInt1() {
-        return value1.get();
+    public String getVal1() {
+        return value1.toString();
     }
 
-    public int getInt2() {
-        return value2.get();
+    public String getVal2() {
+        return value2.toString();
     }
 
     @Override

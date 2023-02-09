@@ -18,7 +18,8 @@ public class Parser {
             index = index + 1;
         }
         if (maxHeadIndexedNoun == -1) {
-            throw new IllegalArgumentException("no nouns in ngram");
+            System.out.println("no nouns in ngram");
+            return null;
         } else {
             return findPatternAndNouns(maxHeadIndexedNoun, records);
         }
@@ -32,7 +33,7 @@ public class Parser {
 
         int searchLimit = 3; // limited by amount of words in corpus sentence.
         for (int i = 0; i < searchLimit; i++) {
-            NGramRecord next = records.get(currentNgram.headIndex);
+            NGramRecord next = records.get(currentNgram.headIndex - 1);
             if (!next.tag.equals("NN")) {
                 pattern.append(" ").append(next.word);
             } else {

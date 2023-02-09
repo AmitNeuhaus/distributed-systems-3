@@ -6,98 +6,83 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Partitioner;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
-import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-import org.apache.hadoop.mapreduce.lib.input.MultipleInputs;
-import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
-
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.List;
-
-import java.util.Arrays;
 
 public class MapperReducer_1 {
-    public static class Mapper_1 extends Mapper<LongWritable, Text, Text, IntWritable>{
-        private boolean corpusId = false;
+    public static class Mapper_1 extends Mapper<LongWritable, Text, TupleWritable, Text> {
         @Override
         public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-            List<String> trigramList = Arrays.asList(value.toString().split("\t")).subList(0,3);
-            if (validWords(trigramList)){
-                Text trigram = new Text(String.join(" ",trigramList.get(0), trigramList.get(1), trigramList.get(2)));
-                IntWritable corpus = corpusId ? new IntWritable(1) : new IntWritable(0);
-                System.out.println(trigram);
-                context.write(trigram, corpus);
-                corpusId = !corpusId;
+            String sentence = value.toString().split("\t")[1];
+            PatternNoun patternNoun = Parser.parse(sentence);
+            if(patternNoun != null) {
+                TupleWritable n1n2 = new TupleWritable(patternNoun.noun1, patternNoun.noun2);
+                Text pattern = new Text(patternNoun.pattern);
+                context.write(n1n2, pattern);
             }
-        }
-
-        public boolean validWords(List<String> trigram){
-            if (trigram.size() != 3){
-                return false;
-            }
-            for (String word: trigram){
-                if(!validWord(word)){
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        private boolean validWord(String word) {
-            return word.length() > 0 && allLetters(word);
-        }
-
-        private boolean allLetters(String word) {
-            for (int i = 0 ; i < word.length() ; i++){
-                if (!Character.isLetter(word.charAt(i))){
-                    return false;
-                }
-            }
-            return true;
+            System.out.println("Finished mapper");
         }
     }
 
 
-    public static class Reducer_1 extends Reducer<Text, IntWritable, Text, TupleWritable>{
+    public static class Reducer_1 extends Reducer<TupleWritable, Text, TupleWritable, TupleWritable> {
         @Override
-        public void reduce(Text key, Iterable<IntWritable> counts, Context context) throws IOException, InterruptedException {
-            Iterator<IntWritable> it = counts.iterator();
-            IntWritable r0 = new IntWritable(0);
-            IntWritable r1 = new IntWritable(0);
-            while(it.hasNext()){
-                IntWritable corpusId = it.next();
-                if (corpusId.get() == 0){
-                    r0.set(r0.get() + 1);
-                }else{
-                    r1.set(r1.get() + 1);
+        public void reduce(TupleWritable n1n2, Iterable<Text> patterns, Context context) throws IOException, InterruptedException {
+            System.out.println("In the reducer");
+            Iterator<Text> it = patterns.iterator();
+            String currentPattern;
+            String previousPattern = "";
+            int currentCount = 0;
+            if (it.hasNext()) {
+                currentPattern = it.next().toString();
+                previousPattern = currentPattern;
+                currentCount++;
+            }
+            while (it.hasNext()) {
+                currentPattern = it.next().toString();
+                if (currentPattern.equals(previousPattern)) {
+                    currentCount++;
+                } else {
+                    context.write(n1n2, getPatternToCountTuple(currentCount, previousPattern));
+                    previousPattern = currentPattern;
+                    currentCount = 1;
                 }
             }
-            TupleWritable result = new TupleWritable(r0.get(), r1.get());
-            context.write(key, result);
+            context.write(n1n2, getPatternToCountTuple(currentCount, previousPattern));
         }
     }
-    public static class PartitionerClass extends Partitioner<Text, IntWritable> {
+
+    private static TupleWritable getPatternToCountTuple(int currentCount, String previousPattern) {
+        return new TupleWritable(previousPattern, Integer.toString(currentCount));
+    }
+
+    public static class PartitionerClass extends Partitioner<TupleWritable, Text> {
         @Override
-        public int getPartition(Text key, IntWritable value, int numPartitions) {
+        public int getPartition(TupleWritable key, Text value, int numPartitions) {
             return (key.hashCode() & Integer.MAX_VALUE) % numPartitions;
         }
     }
+
     public static void main(String[] args) throws Exception {
-        Configuration conf = new Configuration();
-        Job job = Job.getInstance(conf, "Step_1");
-        job.setJarByClass(MapperReducer_1.class);
-        job.setMapperClass(Mapper_1.class);
-        job.setPartitionerClass(PartitionerClass.class);
-        job.setReducerClass(Reducer_1.class);
-        job.setMapOutputKeyClass(Text.class);
-        job.setMapOutputValueClass(IntWritable.class);
-        job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(TupleWritable.class);
+        try{
+            Configuration conf = new Configuration();
+            Job job = Job.getInstance(conf, "Step_1");
+            job.setJarByClass(MapperReducer_1.class);
+            job.setMapperClass(Mapper_1.class);
+            job.setPartitionerClass(PartitionerClass.class);
+            job.setReducerClass(Reducer_1.class);
+            job.setMapOutputKeyClass(TupleWritable.class);
+            job.setMapOutputValueClass(Text.class);
+            job.setOutputKeyClass(TupleWritable.class);
+            job.setOutputValueClass(TupleWritable.class);
 //        job.setInputFormatClass(SequenceFileInputFormat.class);
-        FileInputFormat.addInputPath(job, new Path(args[0]));
-        FileOutputFormat.setOutputPath(job, new Path(args[1]));
-        System.exit(job.waitForCompletion(true) ? 0 : 1);
+            FileInputFormat.addInputPath(job, new Path(args[0]));
+            FileOutputFormat.setOutputPath(job, new Path(args[1]));
+            System.exit(job.waitForCompletion(true) ? 0 : 1);
+        }catch(Exception e){
+            System.out.println(e);
+        }
+
     }
 }
