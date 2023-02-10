@@ -9,5 +9,9 @@ sahara	sahara/NNP/ROOT/0 from/IN/prep/1 conquest/NNP/pobj/2 to/TO/prep/1 rise/NN
 sahara	sahara/NNP/ROOT/0 g./NNP/nn/3 pazzanita/NNP/appos/1	48	1996,1	1997,7	1998,15	1999,18	2000,7
 sahara	sahara/NNP/ROOT/0 great/NNP/nn/3 desert/NNP/appos/1	30	1821,2	1837,2	1839,3	1840,2	1841,1	1842,1	1844,1	1845,1	1846,3	1945,3	1947,1	1958,3	1959,1	1962,1	1965,2	1967,1	1999,1	2004,1
 sahara	sahara/NNP/ROOT/0 fight/NN/dep/1 like/NNP/prep/2 determination/NN/pobj/3	11	1980,3	1983,5	1986,1	1989,1	2002,1
+sahara	sahara/NNP/ROOT/0 fight/NN/dep/1 like/NNP/prep/2 determination/NN/pobj/3	11	1980,3	1983,5	1986,1	1989,1	2002,1
+sahara	sahara/NNP/ROOT/0 fight/NN/dep/1 like/NNP/prep/2 determination/NN/pobj/3	11	1980,3	1983,5	1986,1	1989,1	2002,1
 sahara	sahara/NNP/ROOT/0 fight/NN/dep/1 in/NNP/prep/2 determination/NN/pobj/3	11	1980,3	1983,5	1986,1	1989,1	2002,1
-sahara	late/NNP/ROOT/0 fight/NN/dep/1 for/NNP/prep/2 determination/NN/pobj/3	11	1980,3	1983,5	1986,1	1989,1	2002,1
+sahara	late/NNP/ROOT/0 tom/NN/dep/1 for/NNP/prep/2 amit/NN/pobj/3	11	1980,3	1983,5	1986,1	1989,1	2002,1
+sahara	late/NNP/ROOT/0 tom/NN/dep/1 for/NNP/prep/2 amit/NN/pobj/3	11	1980,3	1983,5	1986,1	1989,1	2002,1
+sahara	late/NNP/ROOT/0 tom/NN/dep/1 like/NNP/prep/2 amit/NN/pobj/3	11	1980,3	1983,5	1986,1	1989,1	2002,1

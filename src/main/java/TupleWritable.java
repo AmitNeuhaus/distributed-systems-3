@@ -58,6 +58,6 @@ public class TupleWritable implements WritableComparable<TupleWritable> {
 
     @Override
     public String toString(){
-        return getFirst().toString() + " " +  getSecond().toString();
+        return getFirst().toString() + getSecond().toString();
     }
 }

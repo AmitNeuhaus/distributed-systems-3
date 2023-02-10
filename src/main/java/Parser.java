@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -26,6 +27,7 @@ public class Parser {
     }
 
     public static PatternNoun findPatternAndNouns(Integer startIndex, ArrayList<NGramRecord> records) {
+        // Getting pattern and nouns from corpus.
         NGramRecord currentNgram = records.get(startIndex);
         StringBuilder pattern = new StringBuilder();
         String noun1 = currentNgram.word;
@@ -47,6 +49,20 @@ public class Parser {
             return new PatternNoun(noun1, noun2, String.valueOf(pattern));
         }
     }
+
+
+    //getting pattern and noun from output reducer 1.
+    public static PatternNoun getPatternNoun(String value){
+        List<String> nouns_pattern_list = Arrays.stream(value.split(" ")).toList();
+        String noun1 = nouns_pattern_list.get(0);
+        String noun2 = nouns_pattern_list.get(1);
+        String pattern = "";
+        for (int i=2; i< nouns_pattern_list.size(); i++){
+            pattern = pattern + nouns_pattern_list.get(i);
+        }
+        return new PatternNoun(noun1,noun2,pattern);
+    }
+
 
     static class NGramRecord {
         public String word;

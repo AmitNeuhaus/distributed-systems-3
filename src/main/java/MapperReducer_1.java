@@ -60,7 +60,7 @@ public class MapperReducer_1 {
             job.setReducerClass(Reducer_1.class);
             job.setMapOutputKeyClass(TupleWritable.class);
             job.setMapOutputValueClass(IntWritable.class);
-            job.setOutputKeyClass(TupleWritable.class);
+            job.setOutputKeyClass(Text.class);
             job.setOutputValueClass(Text.class);
 //        job.setInputFormatClass(SequenceFileAsTextInputFormat.class);
             FileInputFormat.addInputPath(job, new Path(args[0]));
