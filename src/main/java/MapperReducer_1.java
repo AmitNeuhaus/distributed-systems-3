@@ -13,45 +13,29 @@ import java.io.IOException;
 import java.util.Iterator;
 
 public class MapperReducer_1 {
-    public static class Mapper_1 extends Mapper<LongWritable, Text, TupleWritable, Text> {
+    public static class Mapper_1 extends Mapper<LongWritable, Text, TupleWritable, IntWritable> {
         @Override
         public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             String sentence = value.toString().split("\t")[1];
             PatternNoun patternNoun = Parser.parse(sentence);
             if(patternNoun != null) {
-                TupleWritable n1n2 = new TupleWritable(new Text(patternNoun.noun1), new Text(patternNoun.noun2));
-                Text pattern = new Text(patternNoun.pattern);
-                context.write(n1n2, pattern);
+                TupleWritable n1n2_pattern = new TupleWritable(new Text(patternNoun.noun1 + " " + patternNoun.noun2),  new Text(patternNoun.pattern));
+                context.write(n1n2_pattern, new IntWritable(1));
             }
             System.out.println("Finished mapper");
         }
     }
 
 
-    public static class Reducer_1 extends Reducer<TupleWritable, Text, TupleWritable, TupleWritable> {
+    public static class Reducer_1 extends Reducer<TupleWritable, IntWritable, Text, Text> {
         @Override
-        public void reduce(TupleWritable n1n2, Iterable<Text> patterns, Context context) throws IOException, InterruptedException {
-            System.out.println("In the reducer");
-            Iterator<Text> it = patterns.iterator();
-            String currentPattern;
-            String previousPattern = "";
-            int currentCount = 0;
-            if (it.hasNext()) {
-                currentPattern = it.next().toString();
-                previousPattern = currentPattern;
-                currentCount++;
+        public void reduce(TupleWritable n1n2_pattern, Iterable<IntWritable> amountArray, Context context) throws IOException, InterruptedException {
+            Iterator<IntWritable> it = amountArray.iterator();
+            IntWritable sum = new IntWritable(0);
+            while(it.hasNext()){
+                sum = new IntWritable(sum.get() + it.next().get()); // should be 1 for each , but I still add it.next().get()
             }
-            while (it.hasNext()) {
-                currentPattern = it.next().toString();
-                if (currentPattern.equals(previousPattern)) {
-                    currentCount++;
-                } else {
-                    context.write(n1n2, getPatternToCountTuple(currentCount, previousPattern));
-                    previousPattern = currentPattern;
-                    currentCount = 1;
-                }
-            }
-            context.write(n1n2, getPatternToCountTuple(currentCount, previousPattern));
+            context.write(new Text(n1n2_pattern.toString()), new Text(sum.toString()));
         }
     }
 
@@ -75,7 +59,7 @@ public class MapperReducer_1 {
             job.setPartitionerClass(PartitionerClass.class);
             job.setReducerClass(Reducer_1.class);
             job.setMapOutputKeyClass(TupleWritable.class);
-            job.setMapOutputValueClass(Text.class);
+            job.setMapOutputValueClass(IntWritable.class);
             job.setOutputKeyClass(TupleWritable.class);
             job.setOutputValueClass(Text.class);
 //        job.setInputFormatClass(SequenceFileAsTextInputFormat.class);

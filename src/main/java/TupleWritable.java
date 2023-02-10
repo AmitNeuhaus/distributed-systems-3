@@ -55,4 +55,9 @@ public class TupleWritable implements WritableComparable<TupleWritable> {
         }
         return second.compareTo(o.second);
     }
+
+    @Override
+    public String toString(){
+        return getFirst().toString() + " " +  getSecond().toString();
+    }
 }

@@ -2,9 +2,12 @@ sahara	sahara/NNP/ROOT/0 d'/NNP/dep/3 mer/NNP/appos/1	12	1970,12
 sahara	sahara/NNP/ROOT/0 du/NNP/nn/3 nord/NNP/dep/1	10	1909,9	1974,1
 sahara	sahara/NNP/ROOT/0 ecological/NNP/nn/3 change/NNP/dep/1	12	1987,1	1988,1	1989,1	1990,1	1991,1	1993,1	1996,1	1997,2	2001,1	2005,2
 sahara	sahara/NNP/ROOT/0 environments/NNS/dep/1 and/CC/cc/2 occupation/NN/conj/2	14	1984,1	1986,1	1989,1	1992,2	1997,1	1998,3	2000,2	2004,3
-sahara	sahara/NNP/ROOT/0 fight/NN/dep/1 for/NN/prep/2 determination/NNP/pobj/3	11	1980,3	1983,5	1986,1	1989,1	2002,1
+sahara	sahara/NNP/ROOT/0 fight/NN/dep/1 for/NNP/prep/2 determination/NN/pobj/3	11	1980,3	1983,5	1986,1	1989,1	2002,1
 sahara	sahara/NNP/ROOT/0 from/IN/dep/4 north/NNP/pobj/2 to/TO/prep/1	10	1989,2	1996,3	2000,1	2002,1	2003,1	2004,2
 sahara	sahara/NNP/ROOT/0 from/IN/prep/1 arab/NN/nn/4 conquest/NN/pobj/2	12	1997,4	2000,2	2001,3	2004,2	2006,1
 sahara	sahara/NNP/ROOT/0 from/IN/prep/1 conquest/NNP/pobj/2 to/TO/prep/1 rise/NN/pobj/4	14	1992,2	1997,4	2000,2	2001,3	2004,2	2006,1
 sahara	sahara/NNP/ROOT/0 g./NNP/nn/3 pazzanita/NNP/appos/1	48	1996,1	1997,7	1998,15	1999,18	2000,7
 sahara	sahara/NNP/ROOT/0 great/NNP/nn/3 desert/NNP/appos/1	30	1821,2	1837,2	1839,3	1840,2	1841,1	1842,1	1844,1	1845,1	1846,3	1945,3	1947,1	1958,3	1959,1	1962,1	1965,2	1967,1	1999,1	2004,1
+sahara	sahara/NNP/ROOT/0 fight/NN/dep/1 like/NNP/prep/2 determination/NN/pobj/3	11	1980,3	1983,5	1986,1	1989,1	2002,1
+sahara	sahara/NNP/ROOT/0 fight/NN/dep/1 in/NNP/prep/2 determination/NN/pobj/3	11	1980,3	1983,5	1986,1	1989,1	2002,1
+sahara	late/NNP/ROOT/0 fight/NN/dep/1 for/NNP/prep/2 determination/NN/pobj/3	11	1980,3	1983,5	1986,1	1989,1	2002,1

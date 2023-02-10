@@ -13,7 +13,7 @@ public class Parser {
             NGramRecord ngramRecord = new NGramRecord(nGram);
             records.add(ngramRecord);
             if (ngramRecord.headIndex > maxHeadIndexedNoun && ngramRecord.tag.equals("NN")) {
-                maxHeadIndexedNoun = ngramRecord.headIndex;
+                maxHeadIndexedNoun = index;
             }
             index = index + 1;
         }
@@ -31,13 +31,12 @@ public class Parser {
         String noun1 = currentNgram.word;
         String noun2 = null;
 
-        int searchLimit = 3; // limited by amount of words in corpus sentence.
-        for (int i = 0; i < searchLimit; i++) {
-            NGramRecord next = records.get(currentNgram.headIndex - 1);
-            if (!next.tag.equals("NN")) {
-                pattern.append(" ").append(next.word);
+        while ( currentNgram.headIndex != 0) {
+            currentNgram = records.get(currentNgram.headIndex - 1);
+            if (!currentNgram.tag.equals("NN")) {
+                pattern.append(" ").append(currentNgram.word);
             } else {
-                noun2 = next.word;
+                noun2 = currentNgram.word;
                 break;
             }
         }
