@@ -46,10 +46,6 @@ public class MapperReducer_DPMIN {
         }
 
 
-//    public enum PatternCountEnum {
-//        PATTERN_COUNT
-//    }
-
 
     public static class PartitionerClass extends Partitioner<TupleWritable, Text> {
         @Override
