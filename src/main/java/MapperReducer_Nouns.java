@@ -17,9 +17,12 @@ public class MapperReducer_Nouns {
     public static class Mapper_Nouns extends Mapper<LongWritable, Text, Text, TupleWritable> {
         @Override
         public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-            String count = value.toString().split("\t")[1];
-            PatternNoun patternNoun = Parser.getPatternNoun(value.toString().split("\t")[0]);
-            context.write(new Text(patternNoun.noun1 + " " + patternNoun.noun2), new TupleWritable(new Text(patternNoun.pattern), new Text(count)));
+            String patternIndex = value.toString().split("\t")[0];
+            String nouns = value.toString().split("\t")[1].split("-")[0];
+            String count = value.toString().split("\t")[1].split("-")[1];
+
+
+            context.write(new Text(nouns), new TupleWritable(new Text(patternIndex), new Text(count)));
         }
 
     }
@@ -28,12 +31,12 @@ public class MapperReducer_Nouns {
         @Override
         public void reduce(Text n1n2, Iterable<TupleWritable> patternAmount, Context context) throws IOException, InterruptedException {
             Iterator<TupleWritable> it = patternAmount.iterator();
-            StringJoiner patterns =new StringJoiner(" ");
+            StringJoiner patterns = new StringJoiner(",");
             while (it.hasNext()) {
                 TupleWritable nextPatternAmount = it.next();
-                Text pattern = nextPatternAmount.getFirst();
+                Text patternIndex = nextPatternAmount.getFirst();
                 Text count = nextPatternAmount.getSecond();
-                patterns.add(pattern.toString() + '-' + count.toString());
+                patterns.add(patternIndex.toString() + '-' + count.toString());
             }
             context.write(n1n2, new Text(patterns.toString()));
         }
