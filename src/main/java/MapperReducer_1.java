@@ -16,13 +16,17 @@ public class MapperReducer_1 {
     public static class Mapper_1 extends Mapper<LongWritable, Text, TupleWritable, IntWritable> {
         @Override
         public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-            String sentence = value.toString().split("\t")[1];
-            PatternNoun patternNoun = Parser.parse(sentence);
-            if(patternNoun != null) {
-                TupleWritable n1n2_pattern = new TupleWritable(new Text(patternNoun.noun1 + " " + patternNoun.noun2),  new Text(patternNoun.pattern));
-                context.write(n1n2_pattern, new IntWritable(1));
+
+            try {
+                String sentence = value.toString().split("\t")[1];
+                PatternNoun patternNoun = Parser.parse(sentence);
+                if (patternNoun != null) {
+                    TupleWritable n1n2_pattern = new TupleWritable(new Text(patternNoun.noun1 + " " + patternNoun.noun2), new Text(patternNoun.pattern));
+                    context.write(n1n2_pattern, new IntWritable(1));
+                }
+            }catch (Exception e){
+                System.out.println(e);
             }
-            System.out.println("Finished mapper");
         }
     }
 
@@ -30,12 +34,16 @@ public class MapperReducer_1 {
     public static class Reducer_1 extends Reducer<TupleWritable, IntWritable, Text, Text> {
         @Override
         public void reduce(TupleWritable n1n2_pattern, Iterable<IntWritable> amountArray, Context context) throws IOException, InterruptedException {
-            Iterator<IntWritable> it = amountArray.iterator();
-            IntWritable sum = new IntWritable(0);
-            while(it.hasNext()){
+            try{
+                Iterator<IntWritable> it = amountArray.iterator();
+                IntWritable sum = new IntWritable(0);
+                while(it.hasNext()){
                 sum = new IntWritable(sum.get() + it.next().get()); // should be 1 for each , but I still add it.next().get()
             }
-            context.write(new Text(n1n2_pattern.toString()), new Text(sum.toString()));
+                context.write(new Text(n1n2_pattern.toString()), new Text(sum.toString()));
+            }catch (Exception e){
+                System.out.println(e);
+            }
         }
     }
 

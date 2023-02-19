@@ -22,7 +22,6 @@ public class Parser {
             index = index + 1;
         }
         if (maxHeadIndexedNoun == -1) {
-            System.out.println("no nouns in ngram");
             return null;
         } else {
             return findPatternAndNouns(maxHeadIndexedNoun, records);
@@ -46,9 +45,9 @@ public class Parser {
             }
         }
         if (noun2 == null) {
-            System.out.println("No second noun found");
             return null;
         } else {
+            System.out.println("Found correct pattern-noun");
             return new PatternNoun(noun1, noun2, pattern.toString(), false);
         }
     }
@@ -80,7 +79,7 @@ public class Parser {
         String noun2 = nouns_pattern_list.get(1);
         String pattern = "";
         for (int i=2; i< nouns_pattern_list.size(); i++){
-            pattern = pattern + nouns_pattern_list.get(i);
+            pattern = pattern + " " + nouns_pattern_list.get(i);
         }
         return new PatternNoun(noun1,noun2,pattern, false);
     }

@@ -42,45 +42,35 @@ public class MapperReducer_Join {
         public void reduce(Text pattern, Iterable<TupleWritable> n1n2, Context context) throws IOException, InterruptedException {
 
             // classify values to 2 groups (pattern  noun count ("noun"), pattern index ("index))
+            String recordOfTypeIndex ="index";
+            String recordOfTypeNoun = "noun";
 
-            Text recordOfTypeIndex = new Text("index");
-            Text recordOfTypeNoun = new Text("noun");
-
-            HashMap<Text, List<TupleWritable>> table = new HashMap();
-            table.put(new Text("index"), new ArrayList<>());
-            table.put(new Text("noun"), new ArrayList<>());
-
+            String patternIndex = "";
+            ArrayList<TupleWritable> listOfNounCounts =  new ArrayList<>();
 
             Iterator<TupleWritable> it = n1n2.iterator();
             while (it.hasNext()) {
                 TupleWritable record = it.next();
-                Text recordType = record.getSecond();
+                String recordType = record.getSecond().toString();
                 if (recordType.equals(recordOfTypeNoun)) {
                     String nouns = record.getFirst().toString().split("-")[0];
                     String count = record.getFirst().toString().split("-")[1];
                     TupleWritable formattedRecord = new TupleWritable(new Text(nouns), new Text(count));
-                    List<TupleWritable> listOfNounCounts = table.get(recordType);
                     listOfNounCounts.add(formattedRecord);
-                    table.put(recordType, listOfNounCounts);
                 } else if (recordType.equals(recordOfTypeIndex)) {
-                    Text patternIndex = record.getFirst();
-                    TupleWritable formattedRecord = new TupleWritable(pattern, patternIndex);
-                    List<TupleWritable> listOfPatternIndex = table.get(recordType); // applying list even if we have only 1
-                    listOfPatternIndex.add(formattedRecord);
-                    table.put(recordType, listOfPatternIndex);
+                    patternIndex = record.getFirst().toString();
                 } else {
                     System.out.println("Couldn't indicate record type");
                 }
             }
-                if(table.get(recordOfTypeIndex).size() == 0){
+                if(patternIndex.equals("")){
                     System.out.println(pattern + "didnt have index record, therefore it didnt pass the DPMIN");
                 }else {
-                    Text patternIndex = table.get(recordOfTypeIndex).get(0).getSecond();
                     //creating context cross product:
-                    for (int i = 0; i < table.get(recordOfTypeNoun).size(); i++) {
-                        Text nouns = table.get(recordOfTypeNoun).get(i).getFirst();
-                        Text count = table.get(recordOfTypeNoun).get(i).getSecond();
-                        context.write(patternIndex, new Text(nouns.toString() + "-" + count.toString()));
+                    for (TupleWritable listOfNounCount : listOfNounCounts) {
+                        Text nouns = listOfNounCount.getFirst();
+                        Text count = listOfNounCount.getSecond();
+                        context.write(new Text(patternIndex), new Text(nouns.toString() + "-" + count.toString()));
                     }
                 }
 

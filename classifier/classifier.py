@@ -1,56 +1,47 @@
 import numpy as np
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import KFold, cross_val_score
 
 # preparing vectors vectors
 patterns_amount_file = open("../patterns-amount.txt", "r")
 patterns_amount = int(patterns_amount_file.read())
-print(patterns_amount)
 patterns_amount_file.close()
 
 
-nouns_vectors_file = open("../final/part-r-00000", "r")
+nouns_vectors_file = open("../LABLED_DATA/part-r-00000", "r")
 noun_vectors = nouns_vectors_file.readlines()
 
 vectors = []
+labels = []
 
 for line in noun_vectors:
-    vector= np.zeros((patterns_amount), dtype=int)
-    print(vector)
+    vector = np.zeros((patterns_amount), dtype=int)
     splitted = line.strip("\n").split("\t")
     nouns = splitted[0]
-    patterns = splitted[1].split(",")
+    patterns = splitted[1].split(":")[0].split(",")
+    label = splitted[1].split(":")[1]
+    label = True if label == "True" else False
     for pattern in patterns:
-        print(pattern)
         pattern_index = int(pattern.split("-")[0])
         pattern_count = int(pattern.split("-")[1])
         vector[pattern_index] = pattern_count
+    labels.append(label)
     vectors.append(vector)
 
-labels=np.array([True,True])
-    
-    
-
-
-
-
-
-
-# X = np.array([[0, 0, 0, 0], [0, 0, 0, 1], [0, 1, 0, 0], [1, 0, 0, 0]])
-# y = np.array([False, True, True, False])
-
-# Split the data into training and testing sets
-vectors_train, vectors_test, labels_train, labels_test = train_test_split(vectors, labels, test_size=0.2, random_state=0)
 
 # Create and train a Decision Tree Classifier
 clf = DecisionTreeClassifier()
-clf.fit(vectors_train, labels_train)
+k_fold = KFold(n_splits=10, shuffle=True, random_state=42)
+scores = cross_val_score(clf, vectors, labels, cv=k_fold)
+
+print("Finished train")
 
 # Evaluate the classifier on the test data
-accuracy = clf.score(vectors_test, labels_test)
-print("Accuracy:", accuracy)
+print("Accuracy: %0.2f (+/- %0.2f)" % (np.mean(scores), np.std(scores) * 2))
 
+clf.fit(vectors, labels)
 # Predict the labels for new, unseen data
-X_new = np.array([[0, 3]])
-y_pred = clf.predict(X_new)
-print("Predicted label:", y_pred[0])
+
+example_vector = np.array([vectors[0]])
+y_pred = clf.predict(example_vector)
+print("Predicted label:", y_pred[0], labels[0])
