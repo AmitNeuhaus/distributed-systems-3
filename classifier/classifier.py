@@ -1,6 +1,7 @@
 import numpy as np
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import KFold, cross_val_score
+from sklearn.metrics import precision_score, recall_score, f1_score
 
 # preparing vectors vectors
 patterns_amount_file = open("../patterns-amount.txt", "r")
@@ -42,6 +43,16 @@ print("Accuracy: %0.2f (+/- %0.2f)" % (np.mean(scores), np.std(scores) * 2))
 clf.fit(vectors, labels)
 # Predict the labels for new, unseen data
 
+# Use the classifier to predict labels for a new set of vectors
+predicted_labels = clf.predict(vectors)
+
+# Calculate precision, recall, and F1 scores
+precision = precision_score(labels, predicted_labels)
+recall = recall_score(labels, predicted_labels)
+f1 = f1_score(labels, predicted_labels)
 example_vector = np.array([vectors[0]])
 y_pred = clf.predict(example_vector)
-print("Predicted label:", y_pred[0], labels[0])
+# Print the results
+print("Precision: {:.2f}".format(precision))
+print("Recall: {:.2f}".format(recall))
+print("F1 score: {:.2f}".format(f1))
