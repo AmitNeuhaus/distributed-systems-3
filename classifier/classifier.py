@@ -1,7 +1,7 @@
 import numpy as np
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import KFold, cross_val_score
-from sklearn.metrics import precision_score, recall_score, f1_score
+from sklearn.metrics import precision_score, recall_score, f1_score,confusion_matrix
 
 # preparing vectors vectors
 patterns_amount_file = open("../patterns-amount.txt", "r")
@@ -45,6 +45,9 @@ clf.fit(vectors, labels)
 
 # Use the classifier to predict labels for a new set of vectors
 predicted_labels = clf.predict(vectors)
+conf_matrix = confusion_matrix(labels, predicted_labels)
+
+
 
 # Calculate precision, recall, and F1 scores
 precision = precision_score(labels, predicted_labels)
@@ -56,3 +59,44 @@ y_pred = clf.predict(example_vector)
 print("Precision: {:.2f}".format(precision))
 print("Recall: {:.2f}".format(recall))
 print("F1 score: {:.2f}".format(f1))
+
+
+# Extract the false negatives from the confusion matrix
+
+
+TP = []
+TN = []
+FP = []
+FN = []
+
+# print(predicted_labels)
+# print(labels)
+
+
+for i, vect in enumerate(noun_vectors):
+    splitted = vect.strip("\n").split("\t")
+    nouns = splitted[0]
+
+    #TP:
+    if labels[i] and predicted_labels[i] and len(TP) < 5:
+        TP.append(nouns)
+    elif not labels[i] and not predicted_labels[i] and len(TN) < 5:
+        TN.append(nouns)
+    elif not labels[i] and predicted_labels[i] and len(FP) < 5:
+        FP.append(nouns)
+    elif labels[i] and not predicted_labels[i] and len(FN) < 5:
+        FN.append(nouns)
+
+print(FN ,'FN')
+print(FP ,'FP')
+print(TN ,'TN')
+print(TP ,'TP')
+
+
+
+
+
+
+# # Print some examples of false negatives
+# for i in range(min(5, len(FN_examples))):
+#     print("Example", i+1, "of false negative:", FN_examples[i])
