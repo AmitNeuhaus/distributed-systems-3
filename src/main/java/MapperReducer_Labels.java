@@ -1,11 +1,9 @@
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.Partitioner;
-import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.*;
 import org.apache.hadoop.mapreduce.lib.input.MultipleInputs;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
@@ -80,8 +78,41 @@ public class MapperReducer_Labels {
             job.setOutputKeyClass(Text.class);
             job.setOutputValueClass(Text.class);
             FileOutputFormat.setOutputPath(job, new Path(args[2]));
-            System.exit(job.waitForCompletion(true) ? 0 : 1);
-        } catch (Exception e) {
+            boolean jobSuccessful = job.waitForCompletion(true);
+            if (jobSuccessful) {
+                // get the counters for the job
+                Counters counters = job.getCounters();
+
+                // output the counters
+                // get the counter names for reducer input key-value pairs
+                long reducerInputRecords = counters.findCounter("org.apache.hadoop.mapreduce.TaskCounter", "REDUCE_INPUT_RECORDS").getValue();
+                System.out.println("Reducer input key-value pairs: " + reducerInputRecords);
+
+                // get the counter names for mapper input key-value pairs
+                long mapperInputRecords = counters.findCounter("org.apache.hadoop.mapreduce.TaskCounter", "MAP_INPUT_RECORDS").getValue();
+                System.out.println("Mapper input key-value pairs: " + mapperInputRecords);
+
+                // get the counter names for mapper output key-value pairs
+                long mapperOutputRecords = counters.findCounter("org.apache.hadoop.mapreduce.TaskCounter", "MAP_OUTPUT_RECORDS").getValue();
+                System.out.println("Mapper output key-value pairs: " + mapperOutputRecords);
+
+                Counter outputKeysCounter = counters.findCounter("OutputKeys", "NumKeys");
+                System.out.println("Reducer output " + outputKeysCounter.getValue() + " keys.");
+                // get the counter name for the total bytes processed by the job
+                // get the counter name for the total bytes written by the job
+                FileSystem fs = FileSystem.get(conf);
+                long totalBytes = counters.findCounter(FileOutputFormat.class.getName(), "BYTES_WRITTEN").getValue();
+                System.out.println("Total bytes written by the job: " + totalBytes);
+                // add more counters as needed
+                long physicalMemoryBytes = counters.findCounter("org.apache.hadoop.mapred.Task$Counter", "PHYSICAL_MEMORY_BYTES").getValue();
+                long virtualMemoryBytes = counters.findCounter("org.apache.hadoop.mapred.Task$Counter", "VIRTUAL_MEMORY_BYTES").getValue();
+                long committedHeapBytes = counters.findCounter("org.apache.hadoop.mapred.Task$Counter", "COMMITTED_HEAP_BYTES").getValue();
+
+                // print the memory-related counters
+                System.out.println("Physical memory bytes: " + physicalMemoryBytes);
+                System.out.println("Virtual memory bytes: " + virtualMemoryBytes);
+                System.out.println("Committed heap bytes: " + committedHeapBytes);
+            }         } catch (Exception e) {
             System.out.println(e);
         }
 
