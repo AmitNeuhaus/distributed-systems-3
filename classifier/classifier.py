@@ -37,6 +37,15 @@ scores = cross_val_score(clf, vectors, labels, cv=k_fold)
 
 print("Finished train")
 
+pattern_counter = {}
+
+#Writing vectors to file for frontal check:
+
+# with open("vectors.txt", "w") as txt_file:
+#     for vector in vectors:
+#         txt_file.write(" ".join(str(v) for v in vector) + "\n") 
+
+
 # Evaluate the classifier on the test data
 print("Accuracy: %0.2f (+/- %0.2f)" % (np.mean(scores), np.std(scores) * 2))
 
