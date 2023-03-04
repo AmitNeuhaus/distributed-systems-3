@@ -74,7 +74,7 @@ public class Parser {
 
     //getting pattern and noun from output reducer 1.
     public static PatternNoun getPatternNoun(String value) throws IOException {
-        List<String> nouns_pattern_list = Arrays.stream(value.split(" ")).toList();
+        List<String> nouns_pattern_list = Arrays.asList(value.split(" "));
         String noun1 = nouns_pattern_list.get(0);
         String noun2 = nouns_pattern_list.get(1);
         String pattern = "";
